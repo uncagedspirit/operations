@@ -21,8 +21,9 @@ void GLWidget::paintGL() {
     painter.scale(1, -1);
     const double scale = 10.0;
 
+    // Draw original rectangles
     painter.setPen(Qt::black);
-
+    painter.setBrush(Qt::NoBrush); // No fill for original rectangles
     if (resultPath.isEmpty()) {
         for (const QRectF &r : rectangles) {
             QRectF scaled(r.left() * scale, r.top() * scale,
@@ -31,20 +32,26 @@ void GLWidget::paintGL() {
         }
     }
 
+    // Draw union result as a solid color
     if (!resultPath.isEmpty()) {
         QPainterPath scaledPath;
         QTransform t;
         t.scale(scale, scale);
         t.translate(0, 0);
         scaledPath = t.map(resultPath);
+
+        painter.setBrush(Qt::blue); // Solid color for union result
+        painter.setPen(Qt::NoPen);  // No border for the filled path
         painter.drawPath(scaledPath);
     }
 
-    painter.setPen(Qt::red);
+    // Draw other resultant rectangles as solid color
+    painter.setBrush(Qt::red); // Solid color for other results
+    painter.setPen(Qt::NoPen); // No border for the filled rectangles
     for (const QRectF &r : resultRects) {
         QRectF scaled(r.left() * scale, r.top() * scale,
                       r.width() * scale, r.height() * scale);
-        painter.drawRect(scaled);
+        painter.fillRect(scaled, Qt::red);
     }
 }
 
